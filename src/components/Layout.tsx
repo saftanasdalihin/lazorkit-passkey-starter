@@ -12,7 +12,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       backgroundColor: '#f4f7f6', 
       fontFamily: 'Inter, system-ui, sans-serif',
       color: '#1a202c',
-      padding: '2rem 1rem'
+      padding: '2rem 1rem',
+      boxSizing: 'border-box'
     }}>
       {/* 🟢 Header Section */}
       <header style={{ textAlign: 'center', marginBottom: '3rem' }}>
@@ -68,7 +69,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       }}>
         <p>Built for the Lazorkit Bounty • 2026</p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', marginTop: '1rem' }}>
-            {/* Ganti dengan link repo GitHub kamu */}
             <a 
                 href="https://github.com/saftanasdalihin/lazorkit-passkey-starter" 
                 target="_blank" 
@@ -77,8 +77,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             >
                 GitHub Repo
             </a>
-
-            {/* Ganti dengan link folder docs di GitHub kamu */}
             <a 
                 href="https://github.com/saftanasdalihin/lazorkit-passkey-starter/tree/main/docs" 
                 target="_blank" 

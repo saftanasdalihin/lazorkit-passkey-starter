@@ -16,7 +16,7 @@ export function ConnectButton() {
         </p>
         <button 
           onClick={() => disconnect()}
-          style={{ padding: '0.8rem', cursor: 'pointer', background: '#ff4444', color: 'white', border: 'none', borderRadius: '8px' }}
+          style={{ padding: '0.8rem', cursor: 'pointer', background: '#ff4444', color: 'white', border: 'none', borderRadius: '12px' }}
         >
           Disconnect Wallet
         </button>
@@ -29,14 +29,19 @@ export function ConnectButton() {
       onClick={() => connect()} 
       disabled={isConnecting}
       style={{ 
-        padding: '1rem 2rem', 
+        padding: '0.8rem 1rem', 
         fontSize: '1rem', 
         cursor: 'pointer', 
-        background: '#14F195', // Solana Green
+        background: 'linear-gradient(90deg, #9945FF 0%, #14F195 100%)', // Solana gradient
+        color: 'white',
+        width: '100%',
         border: 'none', 
-        borderRadius: '8px',
-        fontWeight: 'bold'
+        borderRadius: '12px',
+        fontWeight: 'bold',
+        transition: 'transform 0.2s, opacity 0.2s',
       }}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
     >
       {isConnecting ? 'Authenticating...' : 'Sign in with Passkey'}
     </button>

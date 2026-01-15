@@ -33,34 +33,6 @@ export default function App() {
           <TransferButton />
         </section>
       </Layout>
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-        <span style={{ 
-          background: '#14F19522', color: '#14F195', padding: '4px 12px', 
-          borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold', border: '1px solid #14F195' 
-        }}>
-          ● Solana Devnet
-        </span>
-      </div>
-      <div style={{ padding: '2rem', fontFamily: 'sans-serif', maxWidth: '600px', margin: '0 auto' }}>
-        <header style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h1>Solana Passkey Starter</h1>
-          <p>Powered by Lazorkit SDK</p>
-        </header>
-
-        <main style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center' }}>
-          {/* 1. Wallet Connection Section */}
-          <section style={{ width: '100%', padding: '1.5rem', border: '1px solid #ccc', borderRadius: '12px' }}>
-            <h3>Step 1: Authenticate with Biometrics</h3>
-            <ConnectButton />
-          </section>
-
-          {/* 2. Transaction Section */}
-          <section style={{ width: '100%', padding: '1.5rem', border: '1px solid #ccc', borderRadius: '12px' }}>
-            <h3>Step 2: Execute Gasless Transaction</h3>
-            <TransferButton />
-          </section>
-        </main>
-      </div>
     </LazorkitProvider>
   );
 }
