@@ -52,8 +52,11 @@ Detailed guides are available in the `/docs` folder:
 - [Tutorial 1: Creating a Passkey-based Wallet](./docs/01-passkey-setup.md)
 - [Tutorial 2: Triggering Gasless Transactions](./docs/02-gasless-tx.md)
 
-## 🎯 Next Steps
+## 🤝 Contributing
+Contributions are welcome! If you find any bugs or have suggestions for improvements, please open an issue or submit a pull request.
 
-1. **Push to GitHub** (Ensure repo is Public)
-2. **Deploy to Vercel** (Connect your GitHub repo for automatic deployments)
-3. **Submit to Superteam Earn** with your repo and demo links
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+*Built with ❤️ for the Solana Community.*
