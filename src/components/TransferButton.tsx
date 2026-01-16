@@ -5,7 +5,7 @@ export function TransferButton() {
 
   const handleAction = () => {
     // Replace with a real Devnet address for demo
-    transferSol('6p8vK6L6uD8m8vG6...', 0.05);
+    transferSol('7TM1LbfnfdV5ozAz8npnQ1rY4fMBMXZZZyeqzWAFz3Bk', 0.05);
   };
 
 return (
