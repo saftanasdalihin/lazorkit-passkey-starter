@@ -1,70 +1,80 @@
-# Tutorial 2: Executing Gasless Transfers
+# Tutorial 2: Triggering a Gasless Transaction
 
-This guide demonstrates how to build a reusable transfer logic using Custom Hooks and execute transactions without requiring SOL for gas fees.
+This guide demonstrates how to allow users to send transactions even with 0 SOL in their wallet by leveraging Lazorkit's Paymaster.
 
-## The Architecture: Hook + Component
+## The Architecture: Custom Hook Logic
 
-Instead of putting all logic inside the UI, we separate the transaction logic into a custom hook. This makes the code cleaner and more reusable across different parts of the dApp.
+We use a custom hook useTransfer to manage the transaction state (isLoading, signature, error) and interact with the @solana/web3.js library.
 
-## Step 1: Create the useTransfer Hook
+## Step 1: The useTransfer Hook
 
-This hook manages the transaction state and interacts with the Lazorkit SDK to handle the gasless execution.
+This hook builds the instruction and sends it to the Lazorkit SDK for gasless execution.
 
 ```typescript
 // src/hooks/useTransfer.ts
 import { useState } from 'react';
-import { useLazorKit } from '@lazorkit/wallet-sdk';
-import { SystemProgram, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { useWallet } from '@lazorkit/wallet';
+import { SystemProgram, PublicKey, LAMPORTS_PER_SOL, TransactionInstruction } from '@solana/web3.js';
 
 export const useTransfer = () => {
-  const { signAndSendTransaction, address } = useLazorKit();
+  const { signAndSendTransaction, smartWalletPubkey } = useWallet();
   const [isLoading, setIsLoading] = useState(false);
   const [signature, setSignature] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const transferSol = async (recipient: string, amount: number) => {
-    if (!address) return;
+  const transferSol = async (toAddress: string, amount: number) => {
+    if (!smartWalletPubkey) {
+      setError("Wallet not connected");
+      return;
+    }
+
     setIsLoading(true);
+    setError(null);
+    setSignature(null);
 
     try {
-      const instruction = SystemProgram.transfer({
-        fromPubkey: new PublicKey(address),
-        toPubkey: new PublicKey(recipient),
+      const destination = new PublicKey(toAddress);
+
+      const instruction: TransactionInstruction = SystemProgram.transfer({
+        fromPubkey: smartWalletPubkey,
+        toPubkey: destination,
         lamports: amount * LAMPORTS_PER_SOL,
       });
 
-      // Sponsoring the transaction via configured Paymaster
       const txSig = await signAndSendTransaction({
         instructions: [instruction],
+        transactionOptions: {
+          feeToken: 'USDC' // Paymaster sponsors gas or user pays with USDC
+        }
       });
 
       setSignature(txSig);
-    } catch (error) {
-      console.error("Transfer failed:", error);
+      return txSig;
+    } catch (err: any) {
+      console.error("Transfer Error:", err);
+      setError(err.message || "Transaction failed");
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { transferSol, isLoading, signature };
+  return { transferSol, isLoading, signature, error };
 };
 ```
 
-💡 **Pro-Tip**: By wrapping the logic in a hook, you can easily track isLoading states to disable buttons or show spinners in your UI during the transaction.
+## Step 2: Implementation in Component
 
-## Step 2: Implement the TransferButton Component
-
-Now, the UI component only focuses on the visual state and user interaction.
+You can now use this hook in your TransferButton.tsx to handle user interactions.
 
 ```typescript
-// src/components/TransferButton.tsx
 import { useTransfer } from '../hooks/useTransfer';
 
 export function TransferButton() {
-  const { transferSol, isLoading, signature } = useTransfer();
+  const { transferSol, isLoading, signature, error } = useTransfer();
 
   const handleAction = () => {
-    // Replace with a real Devnet address
-    transferSol('7TM1LbfnfdV5ozAz8npnQ1rY4fMBMXZZZyeqzWAFz3Bk', 0.05);
+    // Standard SOL transfer via Gasless Paymaster
+    transferSol('6p8vK6L6uD8m8vG6X7Y8Z9A1B2C3D4E5F6G7H8I9', 0.05); 
   };
 
   return (
@@ -73,18 +83,13 @@ export function TransferButton() {
         {isLoading ? 'Processing Gasless Tx...' : 'Send 0.05 SOL (Gasless)'}
       </button>
 
-      {signature && (
-        <p>Success! Signature: {signature}</p>
-      )}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {signature && <p>Success! Signature: {signature}</p>}
     </div>
   );
 }
 ```
 
-⚠️ **Note on Base58**: Ensure the recipient address passed to transferSol is a full, valid Base58 string to avoid "non-base58 character" errors during the PublicKey initialization.
+💡 **Pro-Tip**: The feeToken: 'USDC' option in signAndSendTransaction is what triggers the gas abstraction feature, allowing the Paymaster to sponsor the transaction.
 
-## Benefits of this Approach
-
-- **Reusability**: You can call useTransfer in multiple components without rewriting the Solana logic.
-- **Readability**: UI components remain small and focused on the "View" layer.
-- **Gasless UX**: The complexity of Account Abstraction is hidden behind a simple transferSol function.
+⚠️ **Note on Base58**: Always ensure the toAddress is a valid Solana address. If the string contains non-base58 characters (like dots or spaces), the new PublicKey() constructor will throw an error.
